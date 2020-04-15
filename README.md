@@ -22,8 +22,11 @@
   * [Docker push](#docker-push)
   * [Docker pull](#docker-pull)
   * [Other images](#other-images)
-* [Docker volume](#docker-volume)
-* [Next Steps](#next-steps)
+  * [Docker volume](#docker-volume)
+  * [Docker exec](#docker-exec)
+* [Do it yourself](#do-it-yourself)
+  * [Extra: Docker pipelines](#extra-docker-pipelines)
+* [Para los putos amos !!!](#para-los-putos-amos-)
 
 <!-- vim-markdown-toc -->
 ## What is docker?
@@ -636,7 +639,7 @@ docker run -p 8080:8080 -it empatyco/pipeline
 
 Create a Dockerfile that do the following.
 
-1) clone the folliwing repo.
+1) clone the following repo.
 
 2) find all files that have the word "empathy"
 
