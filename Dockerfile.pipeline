@@ -1,0 +1,16 @@
+FROM ubuntu AS tar
+COPY . /app/
+RUN mkdir /static
+RUN cd /app/ &&\
+       tar -cvzf empathy-template.tar.gz * && \
+        mv /app/empathy-template.tar.gz /static
+FROM pandoc/core AS pandoc
+COPY README.md /app/README.md
+WORKDIR /app
+COPY pandoc.css pandoc.css
+COPY images images
+RUN pandoc -f markdown README.md --css pandoc.css -o index.html --self-contained --metadata title="Dockerize"
+
+FROM bitnami/nginx:1.16.1-debian-10-r46
+COPY --from=tar /static/empathy-template.tar.gz /app/empathy-template.tar.gz
+COPY --from=pandoc /app/index.html /app/index.html
