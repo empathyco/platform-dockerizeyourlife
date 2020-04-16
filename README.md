@@ -640,15 +640,15 @@ docker run -p 8080:8080 -it empatyco/pipeline
 
 Create a Dockerfile that do the following.
 
-1) clone the following repo.
+1) clone a repo
 
-2) find all files that have the word "empathy"
-
-3) Compress them
+2) build if it has dockerfile
 
 4) Create a pdf with the list of files compress
 
 5) Create a container that server the file.
+
+6) Creat a html/pdf report with old the steps
 
 You can push you images to
 
