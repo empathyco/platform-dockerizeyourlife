@@ -1,7 +1,7 @@
 # You can extend an existing image
 FROM ubuntu
 # Add metadata
-LABEL "com.empathy.talk"="Dockerize you live"
+LABEL "com.empathy.talk"="Dockerize your life"
 LABEL maintainer="cesarg@empathy.co"
 # Expose ports
 EXPOSE 3000

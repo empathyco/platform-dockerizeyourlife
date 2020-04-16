@@ -1,4 +1,4 @@
-# Dockerize your live
+# Dockerize your life
 
 <!-- vim-markdown-toc GFM -->
 
@@ -29,7 +29,7 @@
 * [Para los putos amos !!!](#para-los-putos-amos-)
 
 <!-- vim-markdown-toc -->
-## What is docker?
+## What is Docker?
 
 - Open source project
 - allows a easy way to **package**, **run** and **share** your app in a isolated environment (container)
@@ -38,7 +38,8 @@
 
 ![vmsvscontainer.png](images/vmsvscontainer.png)
 
-- Benefits: 
+### Benefits
+ 
   - Flexible: Even the most complex applications can be containerized.
   - Lightweight: Containers leverage and share the host kernel, making them much more efficient in terms of system resources than virtual machines.
   - Portable: You can build locally, deploy to the cloud, and run anywhere.
@@ -46,15 +47,13 @@
   - Scalable: You can increase and automatically distribute container replicas across a datacenter.
   - Secure: Containers apply aggressive constraints and isolations to processes without any configuration required on the part of the user.
 
-### Docker architecture.
+### Docker architecture
 
-![images/local-arch](images/local-arch.png)
+![local-arch.png](images/local-arch.png)
 
-### Docker live cycle
-
-```mermaid
- stateDiagram
- 
+### Docker life cycle
+<Mermaid chart={`
+	stateDiagram
     Devs --> Registry: push app
     Devs --> Server: run app
     Registry --> Server: pull app
@@ -67,14 +66,12 @@
     state Server {
         docker_pull --> docker_run
     }
+`}/>
 
-```
+### Empathy life cycle
 
-### Empathy
-
-
-```mermaid
- stateDiagram
+<Mermaid chart={`
+	stateDiagram
     Dev --> Git
     Git --> Jenkins
     Jenkins --> Registry: push app
@@ -86,27 +83,38 @@
     state Jenkins {
         git_pull --> docker_build
         docker_build --> docker_push
-
     }
     state Registry {
-      docker_images
+        docker_image
     }
     state ServerProd { 
         docker_pull --> docker_run
     }
+`}/>
 
+## First steps
+
+1. Check you have installed Docker:
+
+```bash 
+docker --version
 ```
 
-### Cmds
+*You should see something like:*
 
-## Check installation
-
-```sh 
-# Check docker version
-docker --version
+```bash
 Docker version 19.03.8, build afacb8b
-# Check that you can run a container
-docker run hello-word
+```
+
+2. Check that you can run a container:
+
+```bash 
+docker run hello-world
+```
+
+*You should see something like:*
+
+```bash
 Unable to find image 'hello-world:latest' locally
 latest: Pulling from library/hello-world
 1b930d010525: Pull complete
@@ -135,14 +143,23 @@ For more examples and ideas, visit:
  https://docs.docker.com/get-started/
 ```
 
-### Docker build
+## Docker build
 
-#### Docker file
+1. Clone [this repository](https://github.com/empathyco/dockerizeyourlife) running: 
 
-##### Build
+```bash
+git clone https://github.com/empathyco/dockerizeyourlife.git
+```
 
+2. Go to the folder:
 
-```Dockerfile
+```bash
+cd dockerizeyourlife
+```
+
+3. Check the Dockerfile in the root folder:
+
+```makefile
 # You can extend an existing image
 FROM ubuntu
 # Add metadata
@@ -175,23 +192,23 @@ HEALTHCHECK --interval=5m --timeout=3s \
 #CMD ["vim", "/app/vim.md"]
 ENTRYPOINT ["vim", "/app/vim.md"]
 ```
-**Oneliner**
-```sh
-docker build --build-arg EMAIL="yourname" -t test-image -f Dockerfile
+
+4. Run the build: 
+
+```bash
+docker build --build-arg EMAIL="yourname" -t test-empathy -f Dockerfile .
 ```
 
-```sh
-docker build \
-  --build-arg EMAIL="cesar" \ # Set build arguments
-  -t test-image \ # Image name
-  -f Dockerfile  
+5. *You should see something like:*
+
+```bash
 # Build start  
 Sending build context to Docker daemon  416.3kB
 # We download the parent image
 Step 1/16 : FROM ubuntu
  ---> 72300a873c2c
 # For each line of the Dockerfile docker creates a new layer
-Step 2/16 : LABEL "com.empathy.talk"="Dockerize you live"
+Step 2/16 : LABEL "com.empathy.talk"="Dockerize your life"
  ---> Using cache
  ---> 7b89f8b0e00f
  # This layer a cached, next time we build the image the layer will be not rebuild
@@ -244,19 +261,34 @@ Step 16/16 : ENTRYPOINT ["vim", "/app/vim.md"]
 Removing intermediate container 2394eaf74011
  ---> b0e7ea6c9093
 Successfully built b0e7ea6c9093
-Successfully tagged empatyco/vim:latest
+Successfully tagged test-empathy:latest
 ....
 ```
 
-### Docker images
+## Docker images
 
-```sh
-# Lets see the image created
-docker images | grep empathy
+1. Lets see the image created:
+
+```bash
+docker images | grep test-empathy
+```
+
+*You should see something like:*
+
+```bash
 REPOSITORY        TAG                    IMAGE ID            CREATED             SIZE
-empatyco/vim      latest                 ac37b42d6e11        25 minutes ago      153MB
-# We can delete also the image
+test-empathy      latest                 ac37b42d6e11        25 minutes ago      153MB
+```
+
+2. We can delete also the image. Check what `rmi` command does:
+
+```bash
 docker rmi --help
+```
+
+*You should see something like:*
+
+```bash
 Usage:	docker rmi [OPTIONS] IMAGE [IMAGE...]
 
 Remove one or more images
@@ -264,9 +296,17 @@ Remove one or more images
 Options:
   -f, --force      Force removal of the image
       --no-prune   Do not delete untagged parents
-# Lets delete our image
-docker rmi empathy/vim
-Untagged: empatyco/vim:latest
+```
+
+3. Lets delete our image:
+
+```bash
+docker rmi test-empathy -f
+```
+
+*You should see something like:*
+```bash
+Untagged: test-empathy:latest
 # It delete each of the layer that we have created in the Dockerfile
 Deleted: sha256:b0e7ea6c909307294c26d736e943a143e422b945c7a712366d99e03c54d14c83
 # It is important to group proper the instructions/layer to avoid rebuilding
@@ -279,20 +319,56 @@ Deleted: sha256:28df5342e515b7c8187b58fee4cc0d44609ddbd3cef3a27aad455c633d2fa8f1
 Deleted: sha256:0c5f88939e979d87ac57689e48de4f4be21daa1c60e1888707a6dfce5c45164d
 ```
 
-### Docker run
+## Docker run
 
-```sh
-# Know lets run the image  by creating a container
-docker run -e COMPANY=empathy -t test-image
-# We can delete the container
-docker rm test-image
+1. Create again the image:
+
+```bash
+docker build --build-arg EMAIL="yourname" -t test-empathy -f Dockerfile .
 ```
 
-#### Expose port
+2. Run the image by creating a container:
 
-In golang-app/
+```bash
+docker run -e COMPANY=empathy -t test-empathy
+```
 
-```Dockerfile
+3. Open a new terminal and run:
+
+```bash
+docker ps
+```
+
+*You should see something like:*
+
+```bash
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                             PORTS               NAMES
+cffa30d1473c        test-empathy        "vim /app/vim.md"   16 seconds ago      Up 16 seconds (health: starting)   3000/tcp            loving_mclean
+```
+
+4. Stop the container changing the **CONTAINER_ID** tag with the one shown before:
+
+```bash
+docker stop <CONTAINER_ID>
+```
+
+5. We can delete the container changing the **CONTAINER_ID** tag with the one shown before:
+
+```bash
+docker rm <CONTAINER_ID>
+```
+
+## Expose port
+
+1. Go to **golang-app** path:
+
+```bash
+cd golang-app
+```
+
+2. Check the Dockerfile:
+
+```makefile
 FROM golang:1.7.3
 WORKDIR /go/src/github.com/empathy/dockerize/
 COPY main.go .
@@ -301,78 +377,166 @@ RUN go get -d -v golang.org/x/net/html \
 CMD ["/go/src/github.com/empathy/dockerize/app"]
 ```
 
-```sh
-# Build
-docker build \
-  -t empathy-example-golang \ # Name of the image that we want to build
-  . # Directory where the docker file is
-# Set the ports we want to use
-export PORT_INTERNAL=5000 #Use our app
-export PORT_EXTERNAL=5001 # Use out host (your machine)
-# Run the container with forwarding the port
-docker run \
-    --rm \ # Remove the container after termination
-    --it \ # Run tty mode
-    --name golang-app \ # Container name
-    -e PORT="${PORT_INTERNAL}" \ # Set env var for the port in our app
-    -p "${PORT_EXTERNAL}:${PORT_INTERNAL}" \ # Set port to forward in host
-    empathy-example-golang # Name of the image to run
+3. Build the image:
+
+```bash
+docker build -t empathy-example-golang .
 ```
-In one line
-```sh
-PORT_INTERNAL=5000; PORT_EXTERNAL=9000;docker build -t empathy-example-golang . && docker run --rm -it --name golang-app -p "${PORT_EXTERNAL}:${PORT_INTERNAL}" -e APP_PORT=${PORT_INTERNAL}  empathy-example-golang
+
+4. Set the ports we want to use:
+
+```bash
+export PORT_INTERNAL=5000 # Use our app
+export PORT_EXTERNAL=5001 # Use our host (your machine)
 ```
-```sh
+
+5. Run the container forwarding the port:
+
+  - **-it**: Run tty mode.
+  - **--name**: Container name.
+  - **-e**: Set env var for the port in our app.
+  - **-p**: Set port to forward in host.
+```bash
+docker run -it --name golang-app -e PORT="${PORT_INTERNAL}" -p "${PORT_EXTERNAL}:${PORT_INTERNAL}" empathy-example-golang
+```
+
+6. Test the running app in a new terminal window:
+
+```bash
 curl localhost:9000/hola_que_ase
+```
+
+*You should see something like:* 
+
+```bash
+curl: (7) Failed to connect to localhost port 9000: Connection refused
+```
+
+7. Try again:
+
+```bash
+curl localhost:5001/hola_que_ase
+```
+
+Now *You should see something like:* 
+
+```bash
 Hello from Empathy Golang service hola_que_ase!
 ```
 
-### Docker ps
+## Docker ps
 
-```sh
-# We can check running container by doing
-$ docker ps
+1. We can check running container by doing:
+
+```bash
+docker ps
+```
+
+*You should see something like:*
+
+```bash
 CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS                    NAMES
-aaa9c1e1f618        empathy-example-golang   "/go/src/github.com/…"   2 seconds ago       Up 1 second         0.0.0.0:5000->9000/tcp   golang-app
-# We can stop/start the container 
-$ docker stop golang-app
-# Nothing running
-$ docker ps
-#But if we check all of them
-$ docker ps -a | grep golang-app
+03879f54c875        empathy-example-golang   "/go/src/github.com/…"   4 minutes ago       Up 4 minutes        0.0.0.0:5001->5000/tcp   golang-app
+```
+
+2. We can stop/start the container:
+
+```bash
+docker stop golang-app
+```
+
+3. Check again:
+
+```bash
+docker ps
+```
+
+Nothing should appear under the header.
+
+4. But... Check all of them:
+
+```bash
+docker ps -a | grep golang-app
+```
+
+*You should see something like:*
+
+```bash
 CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS                    NAMES
 aaa9c1e1f618        empathy-example-golang   "/go/src/github.com/…"   50 seconds ago       Exited (0) 2 seconds ago                     golang-app
-# Start it again
-$ docker start golang-app
-$ docker ps
+```
+
+5. Start it again:
+
+```bash 
+docker start golang-app
+```
+
+6. Check containers again:
+```bash
+docker ps
+```
+
+*You should see something like:*
+
+```bash
 CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS                    NAMES
 aaa9c1e1f618        empathy-example-golang   "/go/src/github.com/…"   2 seconds ago       Up 1 second         0.0.0.0:5000->9000/tcp   golang-app
-# Stop again to free the port
-$ docker stop goolang-app
 ```
 
-### Docker inspect
+7. Stop again to free the port:
 
-```sh
-# More info about the container
+```bash
+docker stop golang-app
+```
+
+## Docker inspect
+
+Show more info about the container:
+
+```bash
 docker inspect golang-app
 ```
-### Docker tag
 
-```sh
-# We can change the name of the image 
-export OLD_IMAGE_NAME="golang-app"
+## Docker tag
+
+1. Change the name of the image:
+
+```bash
+export OLD_IMAGE_NAME="empathy-example-golang"
 export NEW_IMAGE_NAME="empathyco/golang"
-export DOCKER_TAG=`echo "youemail@empathy.co" | base64`
+export BASE64_EMAIL=`echo "youremail@empathy.co" | base64`
+export DOCKER_TAG=`echo "${BASE64_EMAIL//=}"`
 docker tag "${OLD_IMAGE_NAME}" "${NEW_IMAGE_NAME}:${DOCKER_TAG}"
 ```
 
-### Docker login
+2. Inspect the images:
 
-```sh
-# This will login in a remote registry to share our images and download others
-# You can login in multiple registry
+```bash
+docker images
+```
+
+*You should see something like:*
+
+```bash
+REPOSITORY               TAG                            IMAGE ID            CREATED             SIZE
+empathy-example-golang   latest                         ef40c2534f4a        38 minutes ago      697MB
+empathyco/golang         eW91cmVtYWlsQGVtcGF0aHkuY28K   ef40c2534f4a        38 minutes ago      697MB
+```
+
+## Docker login
+
+Login in a remote registry to share our images and download others. You can login in multiple registry.
+
+1. Check the command:
+
+```bash
 docker login --help
+```
+
+*You should see something like:*
+
+```bash
 Usage:	docker login [OPTIONS] [SERVER]
 
 Log in to a Docker registry.
@@ -382,45 +546,81 @@ Options:
   -p, --password string   Password
       --password-stdin    Take the password from stdin
   -u, --username string   Username
-# This example login into hub.docker.com
+```
+
+2. Login into hub.docker.com:
+
+```bash
 docker login
 ```
 
-### Docker push
+*You should see something like:*
 
-```sh
-# We can push our images to share it.
-# This is  the name of the repository
+```bash
+Authenticating with existing credentials...
+Login Succeeded
+```
+
+## Docker push
+
+We can push our images to share it.
+
+1. Set variables:
+
+```bash
+# This is the name of the repository
 # Format: ${REPOSITORY_URL}/${IMAGE_NAME}:${TAG}
 # the default tag is latest
 # the default registry is docker.io
 # example: eu.gcr.io/empathy/golang:master
 export IMAGE_NAME="empathyco/golang"
-export TAG==`echo "youemail@empathy.co" | base64`
-
-$ docker push "${IMAGE_NAME}:${TAG}"
+export BASE64_EMAIL=`echo "youremail@empathy.co" | base64`
+export TAG=`echo "${BASE64_EMAIL//=}"`
 ```
 
-### Docker pull
+2. Push the image:
 
-```sh
-# Know we can share our image
-# Ask for the email of one of your colleagues and hash it
-export COLLEAGUE_EMAIL_HASH=`echo "youcolleagueemail@empathy.co" | base64`
+```bash
+docker push "${IMAGE_NAME}:${TAG}"
+```
+
+:::info
+Time to take a ☕️ meanwhile `docker push` ends.
+:::
+
+## Docker pull
+
+1. Now, we can share our image, ask for the email of one of your colleagues and hash it:
+
+```bash
+export BASE64_EMAIL=`echo "youcolleagueemail@empathy.co" | base64`
+export COLLEAGUE_EMAIL_HASH=`echo "${BASE64_EMAIL//=}"`
 export IMAGE_NAME=empathy/golang
-# Download the new image
-$ docker pull "${IMAGE_NAME}:${COLLEAGUE_EMAIL_HASH}"
-# And run it
-$ docker run "${IMAGE_NAME}:${COLLEAGUE_EMAIL_HASH}"
 ```
 
-### Other images
+2. Download the new image
 
-```sh
-# As you could see in hub.docker.com there are tones of other app
-# Lets run a mongo https://hub.docker.com/_/mongo
+```bash
+docker pull "${IMAGE_NAME}:${COLLEAGUE_EMAIL_HASH}"
+```
 
-$ docker pull mongo 
+3. Run it:
+
+```bash
+docker run "${IMAGE_NAME}:${COLLEAGUE_EMAIL_HASH}"
+```
+
+## Other images
+
+1. As you could see in [hub.docker.com](hub.docker.com) there are tones of other apps. Lets run a mongo (https://hub.docker.com/_/mongo):
+
+```bash
+docker pull mongo 
+```
+
+*You should see something like:*
+
+```bash
 Using default tag: latest
 latest: Pulling from library/mongo
 5bed26d33875: Already exists
@@ -439,22 +639,49 @@ c33efe03b109: Already exists
 Digest: sha256:1e33093260855e83baee0237e29947e243818c58a1d37b1022909e227f624d7a
 Status: Downloaded newer image for mongo:latest
 docker.io/library/mongo:latest
+```
 
-# You can also donwload a specific version by changing the tag.
-$ docker pull mongo:3.6.17
-# Lets run it!!!
-$ docker run \
-  --name `#Name of the image` \
-  -d `#Detach mode to run in the background` \
-  -p 27017:27017 `#Port to forward`
-  mongo
-# We that mongo is running
-$ docker ps
+2. You can also download a specific version by changing the tag:
+
+```bash
+docker pull mongo:3.6.17
+```
+
+3. Lets run it:
+  - **-d**: Detach mode to run in the background.
+  - **--name**: Container name.
+  - **--rm**: Remove the container after termination.
+
+```
+docker run --rm --name mongodb -d -p 9000:27017 mongo
+```
+
+3. Check mongo is running:
+
+```bash
+docker ps
+```
+
+*You should see something like:*
+
+```bash
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                      NAMES
 f55ff4c5015a        mongo               "docker-entrypoint.s…"   22 minutes ago      Up 1 second         0.0.0.0:27017->27017/tcp   mongodb
-# Now we can connect to localhost
-# you will need a mongodb cli to connect
-$ mongo
+```
+
+4. Now we can connect to localhost:
+
+```bash
+mongo mongodb://localhost:9000
+```
+
+:::caution
+You will need a **mongodb CLI** to connect.
+:::
+
+*You should see something like:*
+
+```bash
 MongoDB shell version v4.2.0
 connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
 Implicit session: session { "id" : UUID("225866a8-767a-4648-8798-95043701e5e6") }
@@ -478,27 +705,64 @@ improvements and to suggest MongoDB products and deployment options to you.
 To enable free monitoring, run the following command: db.enableFreeMonitoring()
 To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
 ---
+```
 
-> show dbs
+5. Run inside mongodb terminal to show databases:
+
+```bash
+show dbs
+```
+
+*You should see something like:*
+
+```bash
 admin   0.000GB
 config  0.000GB
 local   0.000GB
->
 ```
 
-### Docker volume
+6. Exit from mongo:
 
-```sh
-# When we delete a container all data that is stores it deletes also
-# For that we have docker volume
-$ docker volumen create mongodbdata
-mongodbdata
-# List the volumen
-$ docker volume ls
+```bash
+exit
+```
+
+7. Stop container for now:
+
+```bash
+docker stop mongodb
+```
+
+## Docker volume
+
+1. When we delete a container all data that is stored is deleted also. For that we have docker volume:
+
+```bash
+docker volume create mongodbdata
+```
+
+2. List the volume:
+
+```bash
+docker volume ls
+```
+
+You should see somthing like:
+
+```bash
 DRIVER              VOLUME NAME
 local               mongodbdata
-# Inspected 
-$ docker volume inspect mongodbdata
+```
+
+3. Inspect the volume:
+
+```bash
+docker volume inspect mongodbdata
+```
+
+*You should see something like:*
+
+```bash
 [
     {
         "CreatedAt": "2020-04-15T11:15:14Z",
@@ -510,70 +774,151 @@ $ docker volume inspect mongodbdata
         "Scope": "local"
     }
 ]
-# And delete it 
-docker volume rm mongodbdata
-# Coming back to the example before lets add persistance to mongodb
-# Create the vol
-docker volume create mongodbdata
-# Run the container w
-docker run \
-  --name mongodb \
-  -v mongodbdata:/data/db \
-  -p 27017:27017 \
-  mongo
-# Lets insert so data
-$ mongo --eval 'db.tutorial.insert({"name":"dockerize"});'
-$ mongo --eval 'db.tutorial.findOne();'
-MongoDB shell version v4.2.0
-connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
-Implicit session: session { "id" : UUID("70d5c332-0516-4a5e-9569-007746a96635") }
-MongoDB server version: 4.2.5
-{ "_id" : ObjectId("5e96efcbd9af284a9809ac0a"), "name" : "dockerize" }
-# Delete the container
-$ docker stop mongodb && docker rm mongodb
-# Now lets run it again
-$ docker run --name mongodb -v mongodbdata:/data/db -d 
-# Check that the data is there
-$ mongo --eval 'db.tutorial.findOne();'
-MongoDB shell version v4.2.0
-connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
-Implicit session: session { "id" : UUID("70d5c332-0516-4a5e-9569-007746a96635") }
-MongoDB server version: 4.2.5
-{ "_id" : ObjectId("5e96efcbd9af284a9809ac0a"), "name" : "dockerize" }
-# You can also create anonymous volume by doing
-mkdir data
-export PATH_TO_YOUR_FOLDER="${PWD}/data"
-docker run \
-  --name mongodb \
-  -v ${PATH_TO_YOUR_FOLDER}:/data/db \
-  -p 27017:27017 \
-  mongo
 ```
 
-### Docker exec 
+4. Delete it:
 
-```sh
-# You can run cmd also in the container
-$ docker exec \
-  -it `#tty activado, so keyboard can be use` \
-  mongodb `#Name of the container` \
-  /bin/bash `#CMD you want to run`
-root@f55ff4c5015a:/# 
+```bash
+docker volume rm mongodbdata
+```
+
+5. And create it again!
+
+```bash
+docker volume create mongodbdata
+```
+
+6. Run the container:
+
+```bash
+docker run --name mongodb -v mongodbdata:/data/db -p 9000:27017 mongo
+```
+
+7. Connect to mongo in other terminal window:
+
+```bash
+mongo mongodb://localhost:9000
+```
+
+8. Lets insert some data:
+
+```bash
+db.tutorial.insert({"name":"dockerize"});
+db.tutorial.findOne();
+```
+
+*You should see something like:*
+
+```bash
+{ "_id" : ObjectId("5e96efcbd9af284a9809ac0a"), "name" : "dockerize" }
+```
+
+9. Exit from mongo:
+
+```bash
+exit
+```
+
+10. Delete the container:
+
+```bash
+docker stop mongodb && docker rm mongodb
+```
+
+11. Now lets run it again:
+
+```bash
+docker run --name mongodb -v mongodbdata:/data/db -p 9000:27017 -d mongo
+```
+
+12. Connect to mongo:
+
+```bash
+mongo mongodb://localhost:9000
+```
+
+13. Check that the data is still there:
+
+```bash
+db.tutorial.findOne();
+```
+
+*You should see something like:*
+
+```bash
+{ "_id" : ObjectId("5e96efcbd9af284a9809ac0a"), "name" : "dockerize" }
+```
+
+:::tip
+You can also create anonymous volume by doing:
+```bash
+mkdir data
+export PATH_TO_YOUR_FOLDER="${PWD}/data"
+docker run --name mongodb -v ${PATH_TO_YOUR_FOLDER}:/data/db -p 9000:27017 mongo
+```
+:::
+
+## Docker exec 
+
+You can run cmd also in the container:
+
+  - **-it**: tty activated, so keyboard can be use.
+  - **mongodb**: Container name.
+  - **/bin/bash**: CMD you want to run.
+
+```bash
+docker exec -it mongodb /bin/bash root@f55ff4c5015a:/ 
 ```
 
 ## Do it yourself
 
-Now that we know the basic of docker (networking is missing but it will be cover in future talk), let see how you got.
+Now that we know the basic of docker (networking is missing but it will be cover in future talk), let see what you got.
 
-Navigate to `node-app`, there you will see an small aplication in nodejs. This app is a **webserver** that is **exposed** in the port set in the env var **APP_PORT**. You can run it with
+Navigate to `node-app`, there you will see an small aplication in nodejs. This app is a **webserver** that is **exposed** in the port set in the env var **APP_PORT**. 
 
-```sh
-APP_PORT=5000 node app.js
+:::info
+For this exercise you will need **node.js** and **jq**.
+
+- Install node.js
+```bash
+brew install node
+```
+
+- Install jq
+```bash
+brew install jq
+```
+:::
+
+1. Navigate to path:
+
+```bash
+cd ../node-app
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the app:
+
+```bash
+export APP_PORT=5000
+export EMAIL="adasfef" 
+node app.js
+```
+
+*You should see something like:*
+
+```bash
 Example app listening at http://localhost:5000
 ```
-The webapp has an endpoint configure to run the following script.
 
-```sh
+The webapp has an endpoint configured to run the following script:
+
+```bash
 #!/bin/bash
 set -xeu
 VERSION=$(cat package.json | jq '.version')
@@ -583,33 +928,46 @@ sed -i 's/EMAIL/'${1}'/g' /opt/Message.txt
 cat /opt/Message.txt
 ```
 
-So to call the app just run
+3. Call the app just running:
 
-```sh
-APP_PORT=5000 curl "localhost:${APP_PORT}"
-casi lo tienes!!!
+```bash
+export APP_PORT=5000
+curl "localhost:${APP_PORT}"
 ```
 
-Create Dockerfile and run the app if everything is done, you will get this msg
+*You should see something like:*
 
+```bash
+Casi lo tienes, crack!!!
+```
 
+4. Create a Dockerfile and run the app: 
 
-```sh
-$ docker run ...
+```bash
+docker run ...
+```
+
+5. Call the app again:
+
+```bash
+export APP_PORT=5000
+curl "localhost:${APP_PORT}"
+```
+
+*You should see something like  (🌈):*
+
+```bash
 Well little papaya!!!
 Version: "1.0.0"
 Email: youemail
 Eres un Hackermaaaaan !!!
 ```
 
-```sh
-APP_PORT=5000 curl "localhost:${APP_PORT}"
-Well little papaya!!!%
-```
+## Extra: Docker pipelines
 
-### Extra: Docker pipelines
+1. Check the following **Dockerfile.pipeline**: 
 
-```Dockerfile
+```makefile
 # Use a tar image to compress the repo
 FROM ubuntu AS tar
 COPY . /app/
@@ -628,28 +986,39 @@ COPY --from=tar /static/empathy-template.tar.gz /app/empathy-template.tar.gz
 COPY --from=pandoc /app/index.html /app/index.html
 ```
 
-```sh
-# build the image
-$ docker build -t empathyco/pipeline -f Dockerfile.pipeline .
-# run the image
-docker run -p 8080:8080 -it empatyco/pipeline
-# Go to http://localhost:8080
+2. Go to root path:
+
+```bash
+cd ..
 ```
 
-## Para los putos amos !!!
+3. Build the image:
 
-Create a Dockerfile that do the following.
+```bash
+docker build -t empathyco/pipeline -f Dockerfile.pipeline .
+```
 
-1) clone a repo
+4. Run the image:
 
-2) build if it has dockerfile
+```bash
+docker run -p 8080:8080 -it empathyco/pipeline
+```
 
-4) Create a pdf with the list of files compress
+3. Go to http://localhost:8080.
 
-5) Create a container that server the file.
+## Para los putos amos!!!
 
-6) Creat a html/pdf report with old the steps
+Choose any language and create a Dockerfile that do the following:
 
-You can push you images to
+1. Clone a repo.
 
-empathyco/pipeline:YOUNAME
+2. Detect if has a Dockerfile.
+
+3. Build the app.
+
+4. Push the app to empathy/[name of the repo].
+
+5. Create a html report of the email with the build status.
+
+6. The end images should be minimun.
+

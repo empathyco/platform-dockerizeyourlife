@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 
     if (err) {
       // node couldn't execute the command
-      msg = 'casi lo tienes!!!'
+      msg = 'Casi lo tienes, crack!!!'
       console.log(msg.yellow)
       console.log(stderr.red)
     }else {
