@@ -26,7 +26,7 @@
   * [Docker exec](#docker-exec)
 * [Do it yourself](#do-it-yourself)
   * [Extra: Docker pipelines](#extra-docker-pipelines)
-* [Para los putos amos !!!](#para-los-putos-amos-)
+* [Para los putos amos !!!](#para-los-putos-amos)
 
 <!-- vim-markdown-toc -->
 ## What is Docker?
