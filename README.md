@@ -54,6 +54,7 @@
 
 ```mermaid
  stateDiagram
+ 
     Devs --> Registry: push app
     Devs --> Server: run app
     Registry --> Server: pull app
